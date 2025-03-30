@@ -7,7 +7,7 @@ import os
 
 load_dotenv()
 
-
+# Recheck the script
 OPENWEATHER_KEY = os.getenv("OPENWEATHER_API_KEY1")
 NEWSAPI_KEY = os.getenv("NEWSAPI_KEY1")
 
