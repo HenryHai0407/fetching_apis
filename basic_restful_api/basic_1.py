@@ -10,3 +10,5 @@ CREATE TABLE IF NOT EXISTS users (
 """)
 conn.commit()
 conn.close()
+
+print("Database and table created successfully!")
