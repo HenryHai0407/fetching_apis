@@ -52,10 +52,6 @@ def delete_user(user_id):
         return jsonify({'error':'User not found'}),404
     return jsonify({'message':'User deleted successfully'})
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
 # Run this to POST the data 
 
 # curl -X POST http://127.0.0.1:5000/users \
@@ -65,3 +61,47 @@ if __name__ == '__main__':
 # ------
 # Day 1: Create a Flask and Web UI
 # Day 2: update the app_flask.py file and add POST request, and understand the bash command line with -X -H -d
+# Day 3: Add PUT and Error Handling
+
+@app.route('/users/<int:user_id>',methods=['PUT'])
+def update_user(user_id):
+    data = request.get_json()
+    name = data.get('name')
+    email =  data.get('email')
+    if not name or not email:
+        return jsonify({'error':'Name and email '}),400
+    try:
+        conn = get_db_connection()
+        cursor = conn.execute('UPDATE users SET name = ?, email = ? WHERE id = ?', (name, email, user_id))
+        conn.commit()
+        conn.close()
+        if cursor.rowcount == 0:
+            return jsonify({'error':'User not found'}),404
+        return jsonify({'message':'User updated successfully'})
+    except  sqlite3.IntegrityError:
+        return jsonify({'error':'Email already exists'}),409
+
+
+# Add Error Handling
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error':'Not found'}),404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'error':'Internal server error'}),500
+
+
+# ### Update user_id = 1 from "Alice" to "Charlie Updated"
+# curl    -X PUT -H "Content-Type: application/json"\
+#         -d '{"name":"Charlie Updated","email":"charlie.new@example.com"}' \
+#         http://127.0.0.1:5000/users/1
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
